@@ -1,9 +1,15 @@
-"""Constants for the GO DAIKIN integration."""
+"""Constants for the GO DAIKIN (Philippines) integration."""
 
-DOMAIN = "godaikin"
+DOMAIN = "godaikin_ph"
+
+# GO DAIKIN Philippine-region cloud API gateways.
+# Login/session is brokered by the "universal" gateway; device data and control
+# live on the "international" gateway. Both are AWS API Gateway stages.
+LOGIN_BASE_URL = "https://qr5sjbuvhd.execute-api.ap-southeast-1.amazonaws.com/prod/"
+DEVICE_BASE_URL = "https://jm41kogy2b.execute-api.ap-southeast-1.amazonaws.com/prod/"
 
 # Storage
-STORAGE_KEY = "godaikin_mold_proof"
+STORAGE_KEY = "godaikin_ph_mold_proof"
 STORAGE_VERSION = 1
 
 # Configuration keys

@@ -2,7 +2,7 @@
     "config": {
         "step": {
             "user": {
-                "title": "Set up GO DAIKIN",
+                "title": "Set up GO DAIKIN (Philippines)",
                 "description": "Enter your GO DAIKIN credentials",
                 "data": {
                     "username": "Email",
@@ -23,7 +23,7 @@
     "options": {
         "step": {
             "init": {
-                "title": "GO DAIKIN Options",
+                "title": "GO DAIKIN (Philippines) Options",
                 "description": "Configure mold-proof settings",
                 "data": {
                     "mold_proof_duration": "Mold-proof Duration (minutes)"

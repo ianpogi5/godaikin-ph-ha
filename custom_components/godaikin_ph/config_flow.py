@@ -37,7 +37,7 @@ async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str,
 
     try:
         # Try to authenticate
-        await auth.async_get_jwt_token()
+        await auth.async_login()
 
         # Try to fetch air conditioners
         api = ApiClient(auth)
@@ -48,12 +48,16 @@ async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str,
 
     except AuthError as err:
         raise InvalidAuth() from err
+    except NoAirConditionersFound:
+        raise
     except Exception as err:
         _LOGGER.exception("Unexpected error during authentication")
         raise CannotConnect() from err
+    finally:
+        await auth.session.close()
 
     # Return info that you want to store in the config entry.
-    return {"title": f"GO DAIKIN ({data[CONF_USERNAME]})"}
+    return {"title": f"GO DAIKIN PH ({data[CONF_USERNAME]})"}
 
 
 class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):

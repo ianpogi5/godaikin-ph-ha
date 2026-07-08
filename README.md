@@ -1,8 +1,8 @@
-# GO DAIKIN - Home Assistant Integration
+# GO DAIKIN (Philippines) - Home Assistant Integration
 
-A native Home Assistant integration for GO DAIKIN air conditioners. This integration communicates directly with the GO DAIKIN cloud API.
+A native Home Assistant integration for GO DAIKIN air conditioners in the **Philippine** region. This integration communicates directly with the GO DAIKIN cloud API.
 
-NOTE: This is an unofficial integration and is not affiliated with Daikin.
+NOTE: This is an unofficial integration and is not affiliated with Daikin. It targets the Philippine GO DAIKIN backend, which uses a different login and API than other regions.
 
 ## Features
 - Auto-discover air conditioners in GO DAIKIN
@@ -18,17 +18,17 @@ NOTE: This is an unofficial integration and is not affiliated with Daikin.
 ## Installation
 
 ### HACS (Recommended)
-1. [![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=doubleukay&repository=godaikin-ha)
-2. Or, search for "GO DAIKIN" in HACS store and install
+1. [![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=ianpogi5&repository=godaikin-ha)
+2. Or, add `https://github.com/ianpogi5/godaikin-ha` as a custom repository in HACS, then search for "GO DAIKIN (Philippines)" and install
 
 ### Manual Installation
-1. Copy the `custom_components/godaikin` directory to your Home Assistant's `custom_components` directory
+1. Copy the `custom_components/godaikin_ph` directory to your Home Assistant's `custom_components` directory
 2. Restart Home Assistant
 
 ## Configuration
 1. Go to Settings → Devices & Services
 2. Click "+ Add Integration"
-3. Search for "GO DAIKIN"
+3. Search for "GO DAIKIN (Philippines)"
 4. Enter your GO DAIKIN username (email) and password
 5. Click Submit
 
@@ -72,11 +72,13 @@ For each air conditioner, the following entities will be created:
 
 ## Development
 
-This integration uses the GO DAIKIN cloud API to control Daikin air conditioners. It authenticates via AWS Cognito and polls the API at regular intervals for updates.
+This integration uses the GO DAIKIN cloud API to control Daikin air conditioners. In the Philippine region, login is brokered by the GO DAIKIN "universal login" service (which returns a bearer token), and device data/control use the regional API gateway. The integration polls the API at regular intervals for updates.
 
 ## Support
 
-For issues and feature requests, please use the [GitHub issue tracker](https://github.com/doubleukay/godaikin-ha/issues).
+For issues and feature requests, please use the [GitHub issue tracker](https://github.com/ianpogi5/godaikin-ha/issues).
+
+This is a Philippine-region fork of the original [doubleukay/godaikin-ha](https://github.com/doubleukay/godaikin-ha).
 
 ## License
 
