@@ -11,7 +11,13 @@ from homeassistant.components.sensor import (
     SensorStateClass,
 )
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import UnitOfEnergy, UnitOfPower, UnitOfTemperature, UnitOfTime
+from homeassistant.const import (
+    PERCENTAGE,
+    UnitOfEnergy,
+    UnitOfPower,
+    UnitOfTemperature,
+    UnitOfTime,
+)
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
@@ -43,6 +49,10 @@ async def async_setup_entry(
                 GodaikinMoldProofRemainingSensor(coordinator, unique_id),
             ]
         )
+        # Units without a humidity sensor always report Sta_IDRh as 0
+        # (there is no Ena_* capability flag for it).
+        if coordinator.data[unique_id].shadowState.Sta_IDRh:
+            entities.append(GodaikinHumiditySensor(coordinator, unique_id))
 
     async_add_entities(entities)
 
@@ -146,6 +156,29 @@ class GodaikinOutdoorTempSensor(GodaikinSensorBase):
     def native_value(self) -> float | None:
         """Return the outdoor temperature."""
         return self.aircond.shadowState.Sta_ODAirTemp
+
+
+class GodaikinHumiditySensor(GodaikinSensorBase):
+    """Indoor humidity sensor for GO DAIKIN air conditioner."""
+
+    _attr_device_class = SensorDeviceClass.HUMIDITY
+    _attr_state_class = SensorStateClass.MEASUREMENT
+    _attr_native_unit_of_measurement = PERCENTAGE
+
+    def __init__(
+        self,
+        coordinator: GodaikinDataUpdateCoordinator,
+        unique_id: UniqueID,
+    ) -> None:
+        """Initialize the humidity sensor."""
+        super().__init__(coordinator, unique_id, "indoor_humidity")
+        self._attr_name = f"{self.aircond.ACName} Indoor Humidity"
+
+    @property
+    def native_value(self) -> float | None:
+        """Return the indoor relative humidity."""
+        humidity = self.aircond.shadowState.Sta_IDRh
+        return humidity if humidity else None
 
 
 class GodaikinEnergySensor(GodaikinSensorBase):

@@ -170,6 +170,11 @@ class ApiClient:
 
         await self._set_desired_state(unique_id, Set_OnOff=1)
 
+    async def set_streamer(self, unique_id: UniqueID, on: bool):
+        _LOGGER.info("Setting streamer %s for %s", on, unique_id)
+
+        await self._set_desired_state(unique_id, Set_Streamer=1 if on else 0)
+
     async def set_status_led(self, unique_id: UniqueID, on: bool):
         _LOGGER.info("Setting status LED %s for %s", on, unique_id)
 

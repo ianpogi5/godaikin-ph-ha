@@ -14,7 +14,7 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .const import DOMAIN
 from .coordinator import GodaikinDataUpdateCoordinator
-from .types import UniqueID
+from .types import Aircond, UniqueID
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -27,12 +27,72 @@ async def async_setup_entry(
     """Set up GO DAIKIN switch entities from a config entry."""
     coordinator: GodaikinDataUpdateCoordinator = hass.data[DOMAIN][entry.entry_id]
 
-    entities = [
+    entities: list[SwitchEntity] = [
         GodaikinMoldProofSwitch(coordinator, unique_id)
         for unique_id in coordinator.data.keys()
     ]
+    entities.extend(
+        GodaikinStreamerSwitch(coordinator, unique_id)
+        for unique_id in coordinator.data.keys()
+        if coordinator.data[unique_id].shadowState.Ena_Streamer
+    )
 
     async_add_entities(entities)
+
+
+class GodaikinStreamerSwitch(
+    CoordinatorEntity[GodaikinDataUpdateCoordinator], SwitchEntity
+):
+    """Representation of GO DAIKIN Streamer (air purification) switch."""
+
+    _attr_icon = "mdi:air-purifier"
+
+    def __init__(
+        self,
+        coordinator: GodaikinDataUpdateCoordinator,
+        unique_id: UniqueID,
+    ) -> None:
+        """Initialize the streamer switch."""
+        super().__init__(coordinator)
+        self._unique_id = unique_id
+        self._attr_unique_id = f"{unique_id}_streamer"
+
+    @property
+    def aircond(self) -> Aircond:
+        """Return the air conditioner data."""
+        return self.coordinator.data[self._unique_id]
+
+    @property
+    def name(self) -> str:
+        """Return the name of the entity."""
+        return f"{self.aircond.ACName} Streamer"
+
+    @property
+    def device_info(self):
+        """Return device information about this entity."""
+        return {
+            "identifiers": {(DOMAIN, self._unique_id)},
+        }
+
+    @property
+    def available(self) -> bool:
+        """Return if entity is available."""
+        return self.coordinator.last_update_success and self.aircond.is_connected
+
+    @property
+    def is_on(self) -> bool:
+        """Return true if the streamer is on."""
+        return bool(self.aircond.shadowState.Set_Streamer)
+
+    async def async_turn_on(self, **kwargs: Any) -> None:
+        """Turn the streamer on."""
+        await self.coordinator.api.set_streamer(self._unique_id, on=True)
+        await self.coordinator.async_request_refresh()
+
+    async def async_turn_off(self, **kwargs: Any) -> None:
+        """Turn the streamer off."""
+        await self.coordinator.api.set_streamer(self._unique_id, on=False)
+        await self.coordinator.async_request_refresh()
 
 
 class GodaikinMoldProofSwitch(
